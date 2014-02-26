@@ -6,3 +6,6 @@ measuring angles with two accelerometers
 this device can be used in hospitals for patients at risk for vap, and bedsores
 measures bed angle and patient angle then compares the two
 finds time below 30 degrees for bed angle and average over designated sampling rate
+
+download pylab by typing:
+sudo apt-get install python-matplotlib
