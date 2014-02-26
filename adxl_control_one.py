@@ -176,7 +176,7 @@ if __name__ == '__main__':
     name="alie.txt"
     accel = Adafruit_ADXL345()
     accel_patient= Adafruit_ADXL345_Patient()
-    print '[Accelerometer X, Y, Z]'
+    #print '[Accelerometer X, Y, Z]'
     c=0 #counter
     co=0 #second counter
     first=0 #know when it's the first iteration
@@ -209,12 +209,17 @@ if __name__ == '__main__':
 		p=avg(myArrayPatient)
 		ang=math.atan(r[0]/math.sqrt(r[1]*r[1]+r[2]*r[2])) #calculates angle for bed
 		ang=math.degrees(ang) #converts to degrees
-		print ang #prints to command line
+
 		savingValues(ang, name) #saves to .txtfile
 		ang_p=math.atan(p[0]/math.sqrt(p[1]*p[1]+p[2]*p[2])) #calculates angle for patient
 		ang_p=math.degrees(ang_p)
 		savingValues(ang_p, 'SternumAngleAlie.txt')
-		initDiff=ang-ang_p		
+		initDiff=ang-ang_p
+		
+		print "Bed "
+		print ang #prints to command line
+		print " Patient	"
+		print ang_p
 
 		if (first==0):
 			SecondArray[co]=ang #creates array with lower sampling rate
