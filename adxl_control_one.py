@@ -33,7 +33,7 @@ from Adafruit_I2C import Adafruit_I2C
 
 from printAngle import savingValues, savingResults
 from funLib import timeBelo, aver, avg, compare, plotThis
-from SaveToWeb import *
+#from SaveToWeb import *
 
 
 class Adafruit_ADXL345(Adafruit_I2C):
