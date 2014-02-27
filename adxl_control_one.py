@@ -191,6 +191,7 @@ if __name__ == '__main__':
     while True:
 	#accel=int(accel.read())
 	#accel_patient=int(accel_patient.read())
+	first=True
 	orig_read = accel.read()
 	orig_read_pat=accel_patient.read()
 	x_deg=int(orig_read[0])
@@ -201,6 +202,10 @@ if __name__ == '__main__':
 	z_deg_p=int(orig_read_pat[2])
 	deg=[x_deg, y_deg, z_deg] #Reads in values for bed angle
 	deg_patient=[x_deg_p,y_deg_p,z_deg_p] #Reads in values for patient angle
+	if first==True:
+		deg=zerofun(deg)
+		deg_patient=zerofun(deg_patient)
+		first=False
 	myArray[c]=deg #puts value in array
 	myArrayPatient[c]=deg_patient
 	c=c+1 #adds one to counter
