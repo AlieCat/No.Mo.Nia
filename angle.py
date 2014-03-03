@@ -8,13 +8,8 @@ import math
 class angle():
 	def __init__(self,point0):
 		self.point0=point0
-		diffpoint=point0
-		if (diffpoint.gety()**2+diffpoint.getz()**2)!=0:
-			self.radians=math.atan(diffpoint.getx()/math.sqrt(diffpoint.gety()**2+diffpoint.getz()**2))
-		#elif (diffpoint.getz()**2+diffpoint.getx()**2)!=0:
-		#	self.radians=math.atan(diffpoint.gety()/math.sqrt(diffpoint.getz()**2+diffpoint.getx()**2))
-		#else:
-		#	self.radians=0
+		if (point0.gety()**2+point0.getz()**2)!=0:
+			self.radians=math.atan(point0.getx()/math.sqrt(point0.gety()**2+point0.getz()**2))
 	def getRadian(self):
 		return self.radians
 	def getDeg(self):
