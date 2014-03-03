@@ -3,6 +3,7 @@ import math
 #import numpy
 from pylab import *
 from point import*
+from adxl_control_one import *
 
 def timeBelo(Array):
 	c=0
@@ -58,5 +59,8 @@ def plotThis(degB, degP):
 	legend(loc=0)
 	xlabel('time')
 	ylabel('angle')
-	show()
+	savefig("BedPatientAngle.png")
+	close()
 	return 0
+
+
