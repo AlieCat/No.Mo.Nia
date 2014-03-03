@@ -2,6 +2,7 @@
 import math
 #import numpy
 from pylab import *
+from point import*
 
 def timeBelo(Array):
 	c=0
@@ -26,14 +27,19 @@ def aver(Array):
 #Note this is not a true average 
 #because both numbers are considered integers and the remainder is discarded
 def avg(array):
-	x=[row[0] for row in array]
-	avgX=sum(x)/len(x)
-	y=[row[1] for row in array]
-	avgY=sum(y)/len(y)
-	z=[row[2] for row in array]
-	avgZ=sum(z)/len(z)
-	average=[avgX,avgY,avgZ]
+	sumx=0
+	sumy=0
+	sumz=0
+	for x in range (0,len(array)-1):
+		sumx+=array[x].getx()
+		sumy+=array[x].gety()
+		sumz+=array[x].getz()
+	avgX=sumx/len(array)
+	avgY=sumy/len(array)
+	avgZ=sumz/len(array)
+	average=point(avgX,avgY,avgZ)
 	return average
+
 
 def compare(degB, degP, diff):
 	if (degP<degB and (degB-degP)>diff):

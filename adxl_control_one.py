@@ -24,6 +24,8 @@
 
 import math
 import datetime
+from point import *
+from angle import *
 #from numpy import *
 
 
@@ -37,6 +39,8 @@ from funLib import timeBelo, aver, avg, compare, plotThis
 
 
 class Adafruit_ADXL345(Adafruit_I2C):
+    # base class = Adafruit_12C
+    # inherited read readU8, write8, readlist
 
     # Minimal constants carried over from Arduino library
 
@@ -72,6 +76,7 @@ class Adafruit_ADXL345(Adafruit_I2C):
         if self.accel.readU8(self.ADXL345_REG_DEVID) == 0xE5:
             # Enable the accelerometer
             self.accel.write8(self.ADXL345_REG_POWER_CTL, 0x08)
+	self.origin=point(0,0,0)
     def setRange(self, range):
         # Read the data format register to preserve bits.  Update the data
         # rate, make sure that the FULL-RES bit is enabled for range scaling
@@ -95,7 +100,11 @@ class Adafruit_ADXL345(Adafruit_I2C):
             g = raw[i] | (raw[i+1] << 8)
             if g > 32767: g -= 65536
             res.append(g)
-        return res
+        return point(res[0],res[1],res[2])
+    def set0(self):
+	self.origin=point(self)
+	return self.origin
+	
 
 
 
@@ -108,92 +117,95 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(25, GPIO.OUT)
 
 if __name__ == '__main__':
-
     
-    from time import sleep
-    name=raw_input('Put both accelerometers into the zero position then press enter: ')
-    name="alie.txt"
+    #creating two object with the class Adafruit_ADXL345 for the two accelerometer
     accel = Adafruit_ADXL345(0x53)
     accel_patient= Adafruit_ADXL345(0x1D)
-    #print '[Accelerometer X, Y, Z]'
+
+    #set counters, & array sizes
     c=0 #counter
     co=0 #second counter
     first=0 #know when it's the first iteration
-    n=500 #array length
+    n=1000 #array length
     myArray=[[0 for j in range(3)] for i in range(n)]#array size
     myArrayPatient=[[0 for j in range(3)] for i in range(n)]#array size
     samplingSize=10 #data used to compute time below 30 and average
     SecondArray= [0]*samplingSize
     SecondArrayPatient= [0]*samplingSize
+    name="bedAngle.txt"
     
+    #sets the zero point (s)
+    raw_input('Put both accelerometers into the zero position then press enter: ')
+    while c<(n-1):
+	myArray[c]=accel.read()
+	c+=1
+    if c==(n-1):
+	s=avg(myArray)
+	c=0
+    print "zero point: ", s.getx(), s.gety(), s.getz()
 
     while True:
-	#accel=int(accel.read())
-	#accel_patient=int(accel_patient.read())
-	firstRead=True
-	orig_read = accel.read()
-	orig_read_pat=accel_patient.read()
-	x_deg=int(orig_read[0])
-	x_deg_p=int(orig_read_pat[0])
-	y_deg=int(orig_read[1])
-	y_deg_p=int(orig_read_pat[1])
-	z_deg=int(orig_read[2])
-	z_deg_p=int(orig_read_pat[2])
-	deg=[x_deg, y_deg, z_deg] #Reads in values for bed angle
-	deg_patient=[x_deg_p,y_deg_p,z_deg_p] #Reads in values for patient angle
-	if firstRead==True:
-		deg=deg0
-		deg_patient=deg_patient0
-		firstRead=False
-	else:
-		deg=deg-deg0
-		deg_patient=deg_patient-deg_patient0
-	myArray[c]=deg #puts value in array
-	myArrayPatient[c]=deg_patient
+
+	#getting the bed angle
+	pt = accel.read()
+	#calibrating the bed angle
+	n_pt=pt.diff(s)
+	#puts value in array
+	myArray[c]=n_pt
+
+	
+	#getting patient
+	pt_patient = accel_patient.read()
+	#calibrating the patient angle
+	
+	#puts value in array
+	myArrayPatient[c]=pt_patient
+
 	c=c+1 #adds one to counter
+
 	if (c==(n-1)): #while counter the designated length
 		r=avg(myArray) #averages collumns in array
+		ang = angle(r)
+		deg = ang.getDeg()
+		print "Bed angle is ", deg
+
 		p=avg(myArrayPatient)
-		ang=math.atan(r[0]/math.sqrt(r[1]*r[1]+r[2]*r[2])) #calculates angle for bed
-		ang=math.degrees(ang) #converts to degrees
+		ang_patient = angle(p)
+		deg_patient = ang_patient.getDeg()
+		print "Patient angle is ", deg_patient
+
 
 		savingValues(ang, name) #saves to .txtfile
-		ang_p=math.atan(p[0]/math.sqrt(p[1]*p[1]+p[2]*p[2])) #calculates angle for patient
-		ang_p=math.degrees(ang_p)
-		savingValues(ang_p, 'SternumAngleAlie.txt')
-		initDiff=ang-ang_p
+		savingValues(ang_patient, 'SternumAngleAlie.txt')
 		
-		print "Bed "
-		print ang #prints to command line
-		print " Patient	"
-		print ang_p
 
 		if (first==0):
 			SecondArray[co]=ang #creates array with lower sampling rate
-			SecondArrayPatient[co]=ang_p
+			SecondArrayPatient[co]=ang_patient
 		elif (first==1):
 			del SecondArray[0]	#deletes first value in array
 			del SecondArrayPatient[0]
 			SecondArray.append(ang)
-			SecondArrayPatient.append(ang_p)
+			SecondArrayPatient.append(ang_patient)
 
 
 																																									
 		if (co>=(samplingSize-1)):
-			print "calculating patient risk..."
+			#print "calculating patient risk..."
 			tbelo=timeBelo(SecondArray)
-			Avg=aver(SecondArray)
-			slip=compare(ang, ang_p, initDiff)
+			#Avg=aver(SecondArray)
+			#slip=compare(ang, ang_patient, initDiff)
 			#co=0
 			first = 1																																																																		
-			savingResults(tbelo, Avg, slip)
-		if co==(samplingSize-1):
-			plotThis(SecondArray,SecondArrayPatient)
+			#savingResults(tbelo, Avg, slip)
+		#if co==(samplingSize-1):
+			#plotThis(SecondArray,SecondArrayPatient)
 			
 
 	elif (c>(n-1)):
 		c=0
 		co+=1
+		print " "
 	
 		
 	
