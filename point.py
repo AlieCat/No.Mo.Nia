@@ -12,7 +12,7 @@ class point(object):
 	def getz(self):
 		return self.z
 	def diff(self, point1):
-		newpoint=point(self.x-point1.getx(),self.y,self.z)
+		newpoint=point(abs(self.x-point1.getx()),abs(self.y),abs(self.z))
 		return newpoint
 
 
