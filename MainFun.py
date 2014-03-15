@@ -1,31 +1,28 @@
 #!/usr/bin/python
 
+import RPi.GPIO as GPIO
+import time
 import math
 import datetime
 from point import *
 from angle import *
 from adxl_control_one import*
-
-from printAngle import savingValues, savingResults
-from funLib import timeBelo, aver, avg, compare, plotThis
+from printAngle import *
+from funLib import *
 #from SaveToWeb import *
 
 # Simple example prints accelerometer data once per second:
-import RPi.GPIO as GPIO
-import time
-
 GPIO.setmode(GPIO.BCM)
-
 GPIO.setup(25, GPIO.OUT)
 
 if __name__ == '__main__':
     
-    #creating two object with the class Adafruit_ADXL345 for the two accelerometer
+    #creating two objects with the class Adafruit_ADXL345 for the two accelerometer
     accel = Adafruit_ADXL345(0x53)
     accel_patient= Adafruit_ADXL345(0x1D)
 
     #set counters, & array sizes
-    c=0 #counter
+    
     co=0 #second counter
     first=0 #know when it's the first iteration
     n=1000 #array length
@@ -35,9 +32,11 @@ if __name__ == '__main__':
     SecondArray= [0]*samplingSize
     SecondArrayPatient= [0]*samplingSize
     name="bedAngle.txt"
+    name1="patientangle.txt"
     
     #sets the zero point (s)
     raw_input('Put both accelerometers into the zero position then press enter: ')
+    c=0 #counter
     while c<(n-1):
 	myArray[c]=accel.read()
 	c+=1
@@ -45,6 +44,7 @@ if __name__ == '__main__':
 	s=avg(myArray)
 	c=0
     print "zero point: ", s.getx(), s.gety(), s.getz()
+
 
     while True:
 
@@ -67,18 +67,16 @@ if __name__ == '__main__':
 
 	if (c==(n-1)): #while counter the designated length
 		r=avg(myArray) #averages collumns in array
-		ang = angle(r)
+		ang = angles(r)
 		deg = ang.getDeg()
 		print "Bed angle is ", deg
 
 		p=avg(myArrayPatient)
-		ang_patient = angle(p)
+		ang_patient = angles(p)
 		deg_patient = ang_patient.getDeg()
 		print "Patient angle is ", deg_patient
 
-
-		savingValues(ang, name) #saves to .txtfile
-		savingValues(ang_patient, 'SternumAngleAlie.txt')
+		savingData(ang, ang_patient, name)
 		
 
 		if (first==0):

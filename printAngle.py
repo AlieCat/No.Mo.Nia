@@ -1,5 +1,20 @@
+#!/usr/bin/python
+
 import math
 import datetime
+import time
+import sqlite3 as lite
+import sys
+
+def savingData(deg, pdeg, patientname):
+    con=lite.connect('test.db')
+    with con:
+        cur =con.cursor()
+	#cur.execute("CREATE TABLE Data(DateTime REAL, Angle REAL, PatientAngle REAL)")
+	when=time.time()
+	cur.execute("INSERT INTO Data VALUES(?, ?, ?)", (when, deg.getDeg(), pdeg.getDeg()))
+    save=True
+    return save
 
 def savingValues(deg, filename):
     when=datetime.datetime.now()
