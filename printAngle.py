@@ -23,7 +23,7 @@ def savingData(deg, pdeg, patientname):
     with con:
         cur =con.cursor()
 	#cur.execute("CREATE TABLE Data(DateTime REAL, Angle REAL, PatientAngle REAL)")
-	when=time.time()
+	when=time.time()#time in seconds from 1977
 	cur.execute("INSERT INTO Data VALUES(?, ?, ?)", (when, deg.getDeg(), pdeg.getDeg()))
     save=True
     return save

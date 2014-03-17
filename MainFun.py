@@ -78,13 +78,12 @@ if __name__ == '__main__':
 		deg = ang.getDeg()
 		print "Bed angle is ", deg
 
-		p=avg(myArrayPatient)
-		ang_patient = angles(p)
+		pat=avg(myArrayPatient)
+		ang_patient = angles(pat)
 		deg_patient = ang_patient.getDeg()
 		print "Patient angle is ", deg_patient
-
+		
 		savingData(ang, ang_patient, name)
-		print "Zero Patient Angle is ", angles(p).getDeg()
 		
 
 		if (first==0):
