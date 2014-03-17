@@ -5,6 +5,7 @@ from pylab import *
 from point import*
 from adxl_control_one import *
 
+
 def timeBelo(Array):
 	c=0
 	Belo=0

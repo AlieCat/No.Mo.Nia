@@ -6,8 +6,20 @@ import time
 import sqlite3 as lite
 import sys
 
+def creating(first):
+    if first=="y":
+    	con=lite.connect('patient1.db')
+    	with con:
+        	cur =con.cursor()
+		cur.execute("CREATE TABLE Data(DateTime REAL, Angle REAL, PatientAngle REAL)")
+		cur.execute("CREATE TABLE Results(DateTime REAL, Average REAL, TimeBelow30 INT)")
+	created=True
+    else:
+	created=False
+    return created
+
 def savingData(deg, pdeg, patientname):
-    con=lite.connect('test.db')
+    con=lite.connect('patient1.db')
     with con:
         cur =con.cursor()
 	#cur.execute("CREATE TABLE Data(DateTime REAL, Angle REAL, PatientAngle REAL)")
