@@ -22,8 +22,9 @@ if __name__ == '__main__':
     accel_patient= Adafruit_ADXL345(0x1D)
 
     #Is this the first time the program is being run? if so create databases
-    DBase =raw_input("Are you running this for the first time? y/n ")
-    creating(DBase)
+    #DBase =raw_input("Are you running this for the first time? y/n ")
+    #creating(DBase)
+    DBase = "n"
 
     #set counters, & array sizes
     co=0
@@ -34,10 +35,10 @@ if __name__ == '__main__':
     samplingSize=10 #data used to compute time below 30 and average
     SecondArray= [0]*samplingSize
     SecondArrayPatient= [0]*samplingSize
-    name='alie'
+    name='Patient5'
     
     #sets the zero point for bed
-    raw_input('Put both accelerometers into the zero position then press enter: ')
+    #raw_input('Put both accelerometers into the zero position then press enter: ')
     c=0 #counter
     while c<(n-1):
 	myArray[c]=accel.read()
@@ -53,12 +54,16 @@ if __name__ == '__main__':
 	print "Bed Angle is ", angles(s).getDeg()
 	print "Patient Angle is ", angles(p).getDeg()
 	print " "
+	sAngle=angles(s).getDeg()
+	pAngle=angles(p).getDeg()
+	difference=abs(pAngle-sAngle)
+	print "differnce is", difference
 
     while True:
 	#getting the bed angle
 	pt = accel.read()
 	#calibrating the bed angle
-	n_pt=pt.diff(s)
+	n_pt=pt.getPoint()
 	#puts value in array
 	myArray[c]=n_pt
 
@@ -66,7 +71,7 @@ if __name__ == '__main__':
 	#getting patient
 	pt_patient = accel_patient.read()
 	#calibrating the patient angle
-	n_pt_p=pt_patient.diff(p)
+	n_pt_p=pt_patient.getPoint()
 	#puts value in array
 	myArrayPatient[c]=n_pt_p
 
@@ -80,34 +85,36 @@ if __name__ == '__main__':
 
 		pat=avg(myArrayPatient)
 		ang_patient = angles(pat)
-		deg_patient = ang_patient.getDeg()
+		deg_patient = ang_patient.getDeg()-difference
 		print "Patient angle is ", deg_patient
 		
 		savingData(ang, ang_patient, name)
-		
+		savingValues(deg, deg_patient, 'patient5.txt')
 
 		if (first==0):
-			SecondArray[co]=ang #creates array with lower sampling rate
-			SecondArrayPatient[co]=ang_patient
+			SecondArray[co]=deg #creates array with lower sampling rate
+			SecondArrayPatient[co]=deg_patient
 		elif (first==1):
 			del SecondArray[0]	#deletes first value in array
 			del SecondArrayPatient[0]
-			SecondArray.append(ang)
-			SecondArrayPatient.append(ang_patient)
+			SecondArray.append(deg)
+			SecondArrayPatient.append(deg_patient)
 
 
 																																									
 		if (co>=(samplingSize-1)):
-			#print "calculating patient risk..."
 			tbelo=timeBelo(SecondArray)
-			#Avg=aver(SecondArray)
-			#slip=compare(ang, ang_patient, initDiff)
+			Avg=aver(SecondArray)
+			slip=compare(ang, ang_patient)
 			#co=0
 			first = 1																																																																		
-			#savingResults(tbelo, Avg, slip)
+			savingResults(tbelo, Avg, slip)
 			print "saving results"
+			plotThis(SecondArray,SecondArrayPatient)
+			savingDataResults(4, Avg, tbelo)
 		#if co==(samplingSize-1):
-			#plotThis(SecondArray,SecondArrayPatient)
+		#	plotThis(SecondArray,SecondArrayPatient)
+		#	savingDataResults(2, Avg, tbelo)
 			
 
 	elif (c>(n-1)):
