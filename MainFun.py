@@ -56,7 +56,7 @@ if __name__ == '__main__':
 	print " "
 	sAngle=angles(s).getDeg()
 	pAngle=angles(p).getDeg()
-	difference=abs(pAngle-sAngle)
+	difference=pAngle-sAngle
 	print "differnce is", difference
 
     while True:
@@ -111,7 +111,7 @@ if __name__ == '__main__':
 			savingResults(tbelo, Avg, slip)
 			print "saving results"
 			plotThis(SecondArray,SecondArrayPatient)
-			savingDataResults(4, Avg, tbelo)
+			savingDataResults(5, Avg, tbelo)
 		#if co==(samplingSize-1):
 		#	plotThis(SecondArray,SecondArrayPatient)
 		#	savingDataResults(2, Avg, tbelo)
